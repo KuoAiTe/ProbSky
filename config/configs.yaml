@@ -1,0 +1,457 @@
+configs:
+  target-class: spark.App
+  target-jar: target/scala-3.1.0/probsky_3-1.0.jar
+  log-properties: src/main/resources/log4j.properties
+  jars:
+    - lib/uncommons-maths-1.2.3.jar
+    - lib/xxl-core-2.0.1.beta.jar
+
+  defaults: &defaults
+    num-dominating-corner: -1
+    bin-size: -1
+    num-dominating-instance: -1
+    split-threshold: -1
+    sample-size: -1
+    heap-capacity: -1
+    enabled: true
+
+  defaults-probsky-for-tripadvisor: &defaults-probsky-for-tripadvisor
+    <<: *defaults
+    bin-size: 2000
+    split-threshold: 5
+    # 2000 for TA, 5000 for synthetic
+    num-dominating-instance: 2000
+    # 250 for TA, 1000 for synthetic
+    num-dominating-corner: 250
+
+  defaults-probsky-for-synthetic: &defaults-probsky-for-synthetic
+    <<: *defaults
+    bin-size: 2000
+    split-threshold: 5
+    # 2000 for TA, 5000 for synthetic
+    num-dominating-instance: 5000
+    # 250 for TA, 1000 for synthetic
+    num-dominating-corner: 1000
+
+  defaults-park-methods-for-tripadvisor: &defaults-park-methods-for-tripadvisor
+    <<: *defaults
+    sample-size: 100
+    heap-capacity: 100
+    split-threshold: 25
+
+  defaults_park_methods_for_synthetic: &defaults_park_methods_for_synthetic
+    <<: *defaults
+    sample-size: 1000
+    heap-capacity: 100
+    split-threshold: 180
+
+  methods: &methods
+    settings1: &method-settings-tripadvisor
+      PSky-Base:
+        <<: *defaults-probsky-for-tripadvisor
+        split-threshold: -1
+        num-dominating-instance: -1
+        enabled: false
+      PSky: &PSky-tripadvisor
+        <<: *defaults-probsky-for-tripadvisor
+        enabled: true
+      PSky-No-Grid:
+        <<: *defaults-probsky-for-tripadvisor
+        enabled: false
+      PSky-No-Pivot:
+        <<: *defaults-probsky-for-tripadvisor
+        split-threshold: -1
+        enabled: false
+      PSky-No-DIP:
+        <<: *defaults-probsky-for-tripadvisor
+        num-dominating-instance: -1
+        enabled: false
+      PSQPFMR:
+        <<: *defaults-park-methods-for-tripadvisor
+        enabled: false
+      PSBRFMR:
+        <<: *defaults-park-methods-for-tripadvisor
+        split-threshold: 50
+        enabled: false
+
+
+    settings2: &method-settings-synthetic
+      PSky-Base:
+        <<: *defaults-probsky-for-synthetic
+        split-threshold: -1
+        num-dominating-instance: -1
+        enabled: false
+      PSky: &PSky-synthetic
+        <<: *defaults-probsky-for-synthetic
+        enabled: true
+      PSky-No-Grid:
+        <<: *defaults-probsky-for-synthetic
+        enabled: false
+      PSky-No-Pivot:
+        <<: *defaults-probsky-for-synthetic
+        split-threshold: -1
+        enabled: false
+      PSky-No-DIP:
+        <<: *defaults-probsky-for-synthetic
+        num-dominating-instance: -1
+        enabled: false
+      PSQPFMR:
+        <<: *defaults_park_methods_for_synthetic
+        enabled: false
+      PSBRFMR:
+        <<: *defaults_park_methods_for_synthetic
+        enabled: false
+test_settings:
+  default_test-settings-tripadvisor: &default-test-settings-tripadvisor
+    probability-threshold:
+      - 0.6
+    num-partition:
+      - 8
+    repeat-times: 1
+    methods:
+      <<: *method-settings-tripadvisor
+
+  default_test-settings-synthetic: &default-test-settings-synthetic
+    probability-threshold:
+      - 0.6
+    num-partition:
+      - 8
+    repeat-times: 1
+    methods:
+      <<: *method-settings-synthetic
+
+
+
+  probability-threshold-test: &probability-threshold-test
+    probability-threshold:
+      - 0.2
+      - 0.4
+      - 0.6
+      - 0.8
+  bin-size-test: &bin-size-test
+    bin-size:
+      - 2000
+      - 4000
+      - 6000
+      - 8000
+  num-dominating-instance-test: &num-dominating-instance-test
+    num-dominating-instance-test:
+      - 1000
+      - 2000
+      - 3000
+      - 4000
+      - 5000
+  split-threshold-test: &split-threshold-test
+    split-threshold-test:
+      - 5
+      - 10
+      - 15
+      - 20
+  num-partition-test: &num-partition-test
+    num-partition-test:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+dataset:
+  ta_4d_instance: &ta_4d_instance
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_3_std_0.05_100000.txt
+      dimension: 4
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_5_std_0.05_100000.txt
+      dimension: 4
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_100000.txt
+      dimension: 4
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_9_std_0.05_100000.txt
+      dimension: 4
+
+  ta_4d_object: &ta_4d_object
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_75000.txt
+      dimension: 4
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_100000.txt
+      dimension: 4
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_125000.txt
+      dimension: 4
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_150000.txt
+      dimension: 4
+
+  ta_4d_prob: &ta_4d_prob
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_100000.txt
+      dimension: 4
+      <<: *probability-threshold-test
+
+  ta_4d_machine: &ta_4d_machine
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_100000.txt
+      dimension: 4
+
+  ta_4d_test: &ta_4d_test
+    - <<: *default-test-settings-tripadvisor
+      src: TA_4d_9_7_std_0.05_100000.txt
+      dimension: 4
+      methods:
+        PSky:
+          <<: *PSky-tripadvisor
+          <<: *num-dominating-instance-test
+          <<: *split-threshold-test
+
+
+  ta_7d_instance: &ta_7d_instance
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_3_std_0.05_100000.txt
+      dimension: 7
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_5_std_0.05_100000.txt
+      dimension: 7
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_100000.txt
+      dimension: 7
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_9_std_0.05_100000.txt
+      dimension: 7
+
+  ta_7d_object: &ta_7d_object
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_75000.txt
+      dimension: 7
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_125000.txt
+      dimension: 7
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_150000.txt
+      dimension: 7
+
+  ta_7d_prob: &ta_7d_prob
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_100000.txt
+      dimension: 7
+      <<: *probability-threshold-test
+
+  ta_7d_machine: &ta_7d_machine
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_100000.txt
+      dimension: 7
+
+
+  ta_7d_test: &ta_7d_test
+    - <<: *default-test-settings-tripadvisor
+      src: TA_7d_9_7_std_0.05_100000.txt
+      dimension: 7
+      <<: *split-threshold-test
+      <<: *num-dominating-instance-test
+      methods:
+        PSky:
+          <<: *PSky-tripadvisor
+          <<: *num-dominating-instance-test
+          <<: *split-threshold-test
+
+
+  cor_7d_instance: &cor_7d_instance
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_5.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_15.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_20.txt
+      dimension: 7
+
+  cor_7d_object: &cor_7d_object
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_50000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_100000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_400000_10.txt
+      dimension: 7
+
+  cor_7d_prob: &cor_7d_prob
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_10.txt
+      dimension: 7
+      <<: *probability-threshold-test
+
+  cor_7d_machine: &cor_7d_machine
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_10.txt
+      dimension: 7
+
+  cor_7d_test: &cor_7d_test
+    - <<: *default-test-settings-synthetic
+      src: cor_7d_200000_10.txt
+      dimension: 7
+      <<: *split-threshold-test
+      <<: *num-dominating-instance-test
+      methods:
+        PSky:
+          <<: *PSky-synthetic
+          <<: *num-dominating-instance-test
+          <<: *split-threshold-test
+
+  ind_7d_instance: &ind_7d_instance
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_5.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_15.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_20.txt
+      dimension: 7
+
+  ind_7d_object: &ind_7d_object
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_50000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_100000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_400000_10.txt
+      dimension: 7
+
+  ind_7d_prob: &ind_7d_prob
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_10.txt
+      dimension: 7
+      <<: *probability-threshold-test
+
+  ind_7d_machine: &ind_7d_machine
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_10.txt
+      dimension: 7
+
+  ind_7d_test: &ind_7d_test
+    - <<: *default-test-settings-synthetic
+      src: ind_7d_200000_10.txt
+      dimension: 7
+      <<: *split-threshold-test
+      <<: *num-dominating-instance-test
+      methods:
+        PSky:
+          <<: *PSky-synthetic
+          <<: *num-dominating-instance-test
+          <<: *split-threshold-test
+
+  anticor_7d_instance: &anticor_7d_instance
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_5.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_15.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_20.txt
+      dimension: 7
+
+  anticor_7d_object: &anticor_7d_object
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_50000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_100000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_10.txt
+      dimension: 7
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_400000_10.txt
+      dimension: 7
+
+  anticor_7d_prob: &anticor_7d_prob
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_10.txt
+      dimension: 7
+      <<: *probability-threshold-test
+
+  anticor_7d_machine: &anticor_7d_machine
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_10.txt
+      dimension: 7
+
+  anticor_7d_test: &anticor_7d_test
+    - <<: *default-test-settings-synthetic
+      src: anticor_7d_200000_10.txt
+      dimension: 7
+      <<: *split-threshold-test
+      <<: *num-dominating-instance-test
+      methods:
+        PSky:
+          <<: *PSky-synthetic
+          <<: *num-dominating-instance-test
+          <<: *split-threshold-test
+experiments:
+  cluster:
+    master: spark://ec2-3-94-144-39.compute-1.amazonaws.com:7077
+    driver:
+      memory-per-driver: 6g
+    executor:
+      memory-per-executor: 6g
+      memory-fraction: 0.9
+    packages:
+      - "org.apache.hadoop:hadoop-aws:2.7.6"
+    files-location: 's3a://dpsky/'
+    runs:
+      files:
+        - *ta_4d_machine
+        - *ta_7d_machine
+        - *cor_7d_machine
+        - *ind_7d_machine
+        - *anticor_7d_machine
+  local:
+    master: local[*]
+    driver:
+      memory-per-driver: 32g
+    executor:
+      memory-per-executor: 32g
+    files-location: 'data/dataset/'
+    runs:
+      files:
+        - *ta_4d_machine
+        - *ta_7d_machine
+        - *cor_7d_machine
+        - *ind_7d_machine
+        - *anticor_7d_machine
+
+      files2:
+        - *ta_4d_prob
+        - *ta_4d_instance
+        - *ta_4d_object
+        - *ta_4d_prob
+        - *ta_7d_instance
+        - *ta_7d_object
+        - *ta_7d_prob
+        - *cor_7d_instance
+        - *cor_7d_object
+        - *cor_7d_prob
+        - *ind_7d_instance
+        - *ind_7d_object
+        - *ind_7d_prob

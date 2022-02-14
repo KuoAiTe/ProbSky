@@ -1,0 +1,210 @@
+configs:
+  csv_file: ./result/data.csv
+  default_testset_parameters: &default_testset_parameters
+    num_partition: 8
+    prob: 0.6
+  default_method_parameters_real: &default_method_parameters_real
+    PSky: &PSky_method_parameters_real
+      num_dominant_corner: 250
+      bin_size: 2000
+      num_dominant_instance: 2000
+      split_threshold: 5
+    PSky-No-Grid:
+      <<: *PSky_method_parameters_real
+    PSky-No-DIP:
+      <<: *PSky_method_parameters_real
+      num_dominant_instance: -1
+    PSky-No-Pivot:
+      <<: *PSky_method_parameters_real
+      split_threshold: -1
+    PSky-Base:
+      <<: *PSky_method_parameters_real
+      num_dominant_instance: -1
+      split_threshold: -1
+    PSQPFMR: &PSQPFMR_method_parameters_real
+      sample_size: 100
+      split_threshold: 25
+      heap_capacity: 100
+    PSBRFMR:
+      <<: *PSQPFMR_method_parameters_real
+      split_threshold: 50
+      heap_capacity: -1
+
+  default_method_parameters_synthetic: &default_method_parameters_synthetic
+    PSky: &PSky_method_parameters_synthetic
+      num_dominant_corner: 1000
+      bin_size: 2000
+      num_dominant_instance: 5000
+      split_threshold: 5
+    PSky-No-Grid:
+      <<: *PSky_method_parameters_synthetic
+    PSky-No-DIP:
+      <<: *PSky_method_parameters_synthetic
+      num_dominant_instance: -1
+    PSky-No-Pivot:
+      <<: *PSky_method_parameters_synthetic
+      split_threshold: -1
+    PSky-Base:
+      <<: *PSky_method_parameters_synthetic
+      num_dominant_instance: -1
+      split_threshold: -1
+    PSQPFMR: &PSQPFMR_method_parameters_synthetic
+      sample_size: 1000
+      split_threshold: 180
+      heap_capacity: 100
+    PSBRFMR:
+      <<: *PSQPFMR_method_parameters_synthetic
+      heap_capacity: -1
+
+
+
+  default_method_params_groupby: &default_method_params_groupby
+    - num_dominant_corner
+    - bin_size
+    - num_dominant_instance
+    - sample_size
+    - split_threshold
+    - heap_capacity
+  output_folder: figure
+  plot_info:
+    test_types:
+      prob_real:
+        datasets:
+          - title: tripadvisor_4d
+            file: s3a://dpsky/TA_4d_9_7_std_0.05_100000.txt
+          - title: tripadvisor_7d
+            file: s3a://dpsky/TA_7d_9_7_std_0.05_100000.txt
+        testset_parameters:
+          <<: *default_testset_parameters
+          prob: null
+      prob_synthetic:
+        enabled: true
+        datasets:
+          - title: cor_7d
+            file: s3a://dpsky/cor_7d_200000_10.txt
+          - title: ind_7d
+            file: s3a://dpsky/ind_7d_200000_10.txt
+          - title: anticor_7d
+            file: s3a://dpsky/anticor_7d_200000_10.txt
+        method_parameters:
+          <<: *default_method_parameters_synthetic
+        testset_parameters:
+          <<: *default_testset_parameters
+          prob: null
+
+
+      machine_real:
+        datasets:
+          - title: tripadvisor_4d
+            file: s3a://dpsky/TA_4d_9_7_std_0.05_100000.txt
+          - title: tripadvisor_7d
+            file: s3a://dpsky/TA_7d_9_7_std_0.05_100000.txt
+        testset_parameters:
+          <<: *default_testset_parameters
+          num_partition: null
+      machine_synthetic:
+        datasets:
+          - title: cor_7d
+            file: s3a://dpsky/cor_7d_200000_10.txt
+          - title: ind_7d
+            file: s3a://dpsky/ind_7d_200000_10.txt
+          - title: anticor_7d
+            file: s3a://dpsky/anticor_7d_200000_10.txt
+        method_parameters:
+          <<: *default_method_parameters_synthetic
+        testset_parameters:
+          <<: *default_testset_parameters
+          num_partition: null
+
+      instance_real:
+        datasets:
+          - title: tripadvisor_4d_instance
+            files:
+              - s3a://dpsky/TA_4d_9_3_std_0.05_100000.txt
+              - s3a://dpsky/TA_4d_9_5_std_0.05_100000.txt
+              - s3a://dpsky/TA_4d_9_7_std_0.05_100000.txt
+              - s3a://dpsky/TA_4d_9_9_std_0.05_100000.txt
+          - title: tripadvisor_7d_instance
+            files:
+              - s3a://dpsky/TA_7d_9_3_std_0.05_100000.txt
+              - s3a://dpsky/TA_7d_9_5_std_0.05_100000.txt
+              - s3a://dpsky/TA_7d_9_7_std_0.05_100000.txt
+              - s3a://dpsky/TA_7d_9_9_std_0.05_100000.txt
+      instance_synthetic:
+          datasets:
+            - title: cor_7d_instance
+              files:
+                - s3a://dpsky/cor_7d_200000_5.txt
+                - s3a://dpsky/cor_7d_200000_10.txt
+                - s3a://dpsky/cor_7d_200000_15.txt
+                - s3a://dpsky/cor_7d_200000_20.txt
+            - title: ind_7d_instance
+              files:
+                - s3a://dpsky/ind_7d_200000_5.txt
+                - s3a://dpsky/ind_7d_200000_10.txt
+                - s3a://dpsky/ind_7d_200000_15.txt
+                - s3a://dpsky/ind_7d_200000_20.txt
+            - title: anticor_7d_instance
+              files:
+                - s3a://dpsky/anticor_7d_200000_5.txt
+                - s3a://dpsky/anticor_7d_200000_10.txt
+                - s3a://dpsky/anticor_7d_200000_15.txt
+                - s3a://dpsky/anticor_7d_200000_20.txt
+          method_parameters:
+            <<: *default_method_parameters_synthetic
+
+      object_real:
+        datasets:
+          - title: tripadvisor_4d_object
+            files:
+              - s3a://dpsky/TA_4d_9_7_std_0.05_75000.txt
+              - s3a://dpsky/TA_4d_9_7_std_0.05_100000.txt
+              - s3a://dpsky/TA_4d_9_7_std_0.05_125000.txt
+              - s3a://dpsky/TA_4d_9_7_std_0.05_150000.txt
+          - title: tripadvisor_7d_object
+            files:
+              - s3a://dpsky/TA_7d_9_7_std_0.05_75000.txt
+              - s3a://dpsky/TA_7d_9_7_std_0.05_100000.txt
+              - s3a://dpsky/TA_7d_9_7_std_0.05_125000.txt
+              - s3a://dpsky/TA_7d_9_7_std_0.05_150000.txt
+      object_synthetic:
+        datasets:
+          - title: cor_7d_object
+            files:
+              - s3a://dpsky/cor_7d_50000_10.txt
+              - s3a://dpsky/cor_7d_100000_10.txt
+              - s3a://dpsky/cor_7d_200000_10.txt
+              - s3a://dpsky/cor_7d_400000_10.txt
+          - title: ind_7d_object
+            files:
+              - s3a://dpsky/ind_7d_50000_10.txt
+              - s3a://dpsky/ind_7d_100000_10.txt
+              - s3a://dpsky/ind_7d_200000_10.txt
+              - s3a://dpsky/ind_7d_400000_10.txt
+          - title: anticor_7d_object
+            files:
+              - s3a://dpsky/anticor_7d_50000_10.txt
+              - s3a://dpsky/anticor_7d_100000_10.txt
+              - s3a://dpsky/anticor_7d_200000_10.txt
+              - s3a://dpsky/anticor_7d_400000_10.txt
+        method_parameters:
+          <<: *default_method_parameters_synthetic
+
+  columns:
+    - start_date
+    - end_date
+    - dataset_file
+    - dimension
+    - prob
+    - method
+    - num_partition
+    - num_skyline
+    - time
+    - num_dominant_instance
+    - num_dominant_corner
+    - unused
+    - bin_size
+    - sample_size
+    - split_threshold
+    - heap_capacity
+    - randSeed
